@@ -24,10 +24,6 @@ SRC_REPO = "mlProject"
 AUTHOR_EMAIL = "siam074@yahoo.com"
 
 
-
-
-
-
 setup(
     name='mlProject',
     version='0.0.1',
