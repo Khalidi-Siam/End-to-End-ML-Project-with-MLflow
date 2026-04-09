@@ -5,8 +5,6 @@ from mlProject.logger import logging
 import sys
 
 
-STAGE_NAME = "Data Ingestion Stage"
-
 class DataIngestionTrainingPipeline:
     def __init__(self):
         pass
@@ -24,12 +22,3 @@ class DataIngestionTrainingPipeline:
         except Exception as e:
             raise CustomException(e, sys)
         
-
-if __name__ == "__main__":
-    try:
-        logging.info(f">>>>> stage {STAGE_NAME} started <<<<<")
-        obj = DataIngestionTrainingPipeline()
-        obj.main()
-        logging.info(f">>>>> stage {STAGE_NAME} completed <<<<<\n\nx==========x")
-    except Exception as e:
-        raise CustomException(e, sys)
