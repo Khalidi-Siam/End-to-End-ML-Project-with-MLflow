@@ -4,9 +4,6 @@ from mlProject.exception import CustomException
 from mlProject.logger import logging
 import sys
 
-
-STAGE_NAME = "Data Validation Stage"
-
 class DataValidationTrainingPipeline:
     def __init__(self):
         pass
