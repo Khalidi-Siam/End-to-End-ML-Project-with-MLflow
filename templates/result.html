@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Wine Quality Prediction - Result</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0a0a0f;
+            --card-bg: #161b2b;
+            --border-color: #334155;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Open Sans', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .card-header {
+            padding: 1.75rem 2rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(249, 115, 22, 0.08);
+        }
+
+        .wine-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #2a1f1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .wine-icon svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .header-text h1 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-text p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 3px;
+        }
+
+        .result-body {
+            padding: 2.8rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .score-ring {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        .score-ring svg {
+            width: 150px;
+            height: 150px;
+            transform: rotate(-90deg);
+        }
+
+        .score-ring .track {
+            fill: none;
+            stroke: var(--border-color);
+            stroke-width: 10;
+        }
+
+        .score-ring .fill {
+            fill: none;
+            stroke: var(--accent-color);
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.2s ease;
+        }
+
+        .score-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .score-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent-color);
+            line-height: 1;
+        }
+
+        .score-max {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .quality-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .quality-tag .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .result-label {
+            text-align: center;
+        }
+
+        .result-label h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-top: 12px;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: var(--border-color);
+            margin: 10px 0;
+        }
+
+        .meta-row {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .meta-item {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+
+        .meta-item .val {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .meta-item .lbl {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .card-footer {
+            padding: 1.4rem 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .back-btn {
+            height: 42px;
+            padding: 0 22px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        @media (max-width: 480px) {
+            .meta-row { grid-template-columns: 1fr 1fr; }
+            .card-header, .result-body, .card-footer {
+                padding-left: 1.4rem;
+                padding-right: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wine-app">
+    <div class="card">
+
+        <!-- Card Header -->
+        <div class="card-header">
+            <div class="wine-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 2h8l1 6c0 3.314-2.686 6-6 6v0c-3.314 0-6-2.686-6-6l1-6z" fill="#f97316" opacity="0.25"/>
+                    <path d="M8 2h8l1 6c0 3.314-2.686 6-6 6v0c-3.314 0-6-2.686-6-6l1-6z" stroke="#f97316" stroke-width="1.4" fill="none"/>
+                    <line x1="12" y1="14" x2="12" y2="20" stroke="#f97316" stroke-width="1.4"/>
+                    <line x1="9" y1="20" x2="15" y2="20" stroke="#f97316" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="header-text">
+                <h1>Prediction Result</h1>
+                <p>Wine Quality Analysis • Completed</p>
+            </div>
+        </div>
+
+        <!-- Result Body -->
+        <div class="result-body">
+
+            <div class="score-ring">
+                <svg viewBox="0 0 120 120">
+                    <circle class="track" cx="60" cy="60" r="54"/>
+                    <circle class="fill" cx="60" cy="60" r="54" id="scoreArc"/>
+                </svg>
+                <div class="score-center">
+                    <span class="score-number" id="scoreNum">{{ prediction }}</span>
+                    <span class="score-max">out of 10</span>
+                </div>
+            </div>
+
+            <div class="result-label">
+                <div class="quality-tag" id="qualityTag">
+                    <span class="dot" id="qualityDot"></span>
+                    <span id="qualityLabel">Quality</span>
+                </div>
+                <h2 id="resultHeading">Your wine scored {{ prediction }}/10</h2>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="meta-row">
+                <div class="meta-item">
+                    <span class="val">11</span>
+                    <span class="lbl">Features Analysed</span>
+                </div>
+                <div class="meta-item">
+                    <span class="val">ML</span>
+                    <span class="lbl">Model Used</span>
+                </div>
+                <div class="meta-item">
+                    <span class="val">0–10</span>
+                    <span class="lbl">Quality Scale</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Card Footer -->
+        <div class="card-footer">
+            <a href="/" class="back-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Try Another Wine
+            </a>
+            <span style="font-size:13px; color:var(--text-secondary);">Powered by Machine Learning</span>
+        </div>
+
+    </div>
+</div>
+
+<!-- Bootstrap JS + Custom Logic -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+// Get the prediction score from Django template
+const score = parseFloat("{{ prediction }}") || 5.0;
+
+const scoreNum = document.getElementById('scoreNum');
+const scoreArc = document.getElementById('scoreArc');
+const qualityLabel = document.getElementById('qualityLabel');
+const qualityTag = document.getElementById('qualityTag');
+const qualityDot = document.getElementById('qualityDot');
+
+// Update score display
+scoreNum.textContent = score.toFixed(1);
+
+// Calculate progress for the circle
+const circumference = 339.3;
+const progress = Math.min(Math.max(score / 10, 0), 1);
+const offset = circumference * (1 - progress);
+scoreArc.setAttribute('stroke-dashoffset', offset);
+
+// Dynamic theming based on score
+let color, label, bgColor;
+
+if (score >= 7) {
+    // Good - Green
+    color = '#22c55e';
+    label = 'Good Quality';
+    bgColor = 'rgba(34, 197, 94, 0.15)';
+} 
+else if (score >= 5) {
+    // Average - Yellow
+    color = '#eab308';
+    label = 'Average Quality';
+    bgColor = 'rgba(234, 179, 8, 0.15)';
+} 
+else {
+    // Bad - Red
+    color = '#ef4444';
+    label = 'Poor Quality';
+    bgColor = 'rgba(239, 68, 68, 0.15)';
+}
+
+// Apply colors
+scoreArc.setAttribute('stroke', color);
+scoreNum.style.color = color;
+qualityDot.style.background = color;
+qualityTag.style.background = bgColor;
+qualityTag.style.color = color;
+qualityLabel.textContent = label;
+
+</script>
+
+</body>
+</html>
