@@ -6,155 +6,114 @@
 [![Flask](https://img.shields.io/badge/Flask-Web%20App-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Status](https://img.shields.io/badge/Project-End--to--End%20ML-success)](#project-pipeline)
 
-Production-style machine learning workflow for Red Wine Quality prediction using:
+A production-style machine learning workflow for **Red Wine Quality** prediction, featuring:
 
-- a multi-stage training pipeline
-- artifact-driven MLOps structure
-- experiment tracking and model logging with MLflow
-- a Flask web app for inference
+- A modular, multi-stage training pipeline
+- Artifact-driven MLOps structure for full traceability
+- Experiment tracking and model logging with **MLflow**
+- A **Flask** web application for real-time inference
 
-The project trains an ElasticNet regressor on physicochemical wine features and predicts a quality score.
+The project trains an **ElasticNet** regressor on physicochemical wine features to predict a quality score.
+
+---
 
 ## Features
 
-- End-to-end modular ML pipeline (ingestion -> validation -> transformation -> training -> evaluation)
+- End-to-end modular ML pipeline: ingestion → validation → transformation → training → evaluation
 - Centralized configuration via YAML (`config.yaml`, `params.yaml`, `schema.yaml`)
-- Schema and dtype validation before downstream stages
-- Artifact-based workflow under `artifacts/` for reproducibility
+- Schema and data type validation before downstream stages
+- Artifact-based workflow under `artifacts/` for full reproducibility
 - Model persistence using `joblib`
-- MLflow tracking for params, metrics, and model logging
-- Flask UI for prediction with user-provided feature values
-- Structured logging and custom exception handling
+- MLflow tracking for parameters, metrics, and model versioning
+- Flask UI for live predictions using user-provided feature values
+- Structured logging and custom exception handling throughout
+
+---
 
 ## Problem Statement
 
-Given 11 chemical properties of red wine, predict the wine `quality` score.
+Given 11 physicochemical properties of red wine, predict the wine **quality** score.
 
-Input features include:
+**Input features:**
 
-- fixed acidity
-- volatile acidity
-- citric acid
-- residual sugar
-- chlorides
-- free sulfur dioxide
-- total sulfur dioxide
-- density
-- pH
-- sulphates
-- alcohol
+| Feature | Feature |
+|---|---|
+| Fixed Acidity | Volatile Acidity |
+| Citric Acid | Residual Sugar |
+| Chlorides | Free Sulfur Dioxide |
+| Total Sulfur Dioxide | Density |
+| pH | Sulphates |
+| Alcohol | *(target: quality)* |
+
+---
 
 ## Tech Stack
 
-- Python
-- Pandas, NumPy, scikit-learn
-- MLflow
-- Flask
-- PyYAML, joblib
+| Category | Tools |
+|---|---|
+| Language | Python |
+| ML & Data | scikit-learn, Pandas, NumPy |
+| Experiment Tracking | MLflow |
+| Web Framework | Flask |
+| Config & Serialization | PyYAML, joblib |
+
+---
 
 ## Project Pipeline
 
-The training run is orchestrated in `main.py` and executes these stages in sequence:
+The training run is orchestrated in `main.py` and executes the following stages in sequence:
 
-1. **Data Ingestion**
-	- Downloads a zip dataset from source URL.
-	- Extracts CSV into artifacts.
+### 1. Data Ingestion
+- Downloads a zipped dataset from the configured source URL.
+- Extracts the CSV into the `artifacts/` directory.
 
-2. **Data Validation**
-	- Checks column presence against schema.
-	- Validates no extra columns.
-	- Validates data types.
-	- Writes validation status to `artifacts/data_validation/status.txt`.
+### 2. Data Validation
+- Checks for required column presence against the defined schema.
+- Validates that no unexpected columns are present.
+- Validates data types for each column.
+- Writes the validation report to `artifacts/data_validation/status.txt`.
 
-3. **Data Transformation**
-	- Performs train/test split (`test_size=0.2`, `random_state=42`).
-	- Saves split datasets to artifacts.
+### 3. Data Transformation
+- Performs a train/test split (`test_size=0.2`, `random_state=42`).
+- Saves the resulting split datasets to `artifacts/`.
 
-4. **Model Trainer**
-	- Trains `ElasticNet` using hyperparameters from `params.yaml`.
-	- Saves model to `artifacts/model_trainer/model.joblib`.
+### 4. Model Training
+- Trains an `ElasticNet` regressor using hyperparameters defined in `params.yaml`.
+- Persists the trained model to `artifacts/model_trainer/model.joblib`.
 
-5. **Model Evaluation + MLflow Logging**
-	- Loads test set and trained model.
-	- Computes RMSE, MAE, and R2.
-	- Saves metrics JSON locally.
-	- Logs params and metrics to MLflow.
-	- Logs model artifact to MLflow.
+### 5. Model Evaluation & MLflow Logging
+- Loads the test set and trained model from artifacts.
+- Computes **RMSE**, **MAE**, and **R²** metrics.
+- Saves metrics locally as a JSON file.
+- Logs parameters, metrics, and the model artifact to the configured MLflow tracking server.
 
-## Architecture Diagram
+---
 
-```mermaid
-flowchart LR
-	A[Source Dataset Zip URL] --> B[Data Ingestion]
-	B --> C[Raw CSV in artifacts/data_ingestion]
-	C --> D[Data Validation<br/>schema + dtype checks]
-	D --> E[Validation Status File]
-	E --> F[Data Transformation<br/>train-test split]
-	F --> G[Train/Test CSV Artifacts]
-	G --> H[Model Trainer<br/>ElasticNet]
-	H --> I[Trained Model Artifact<br/>model.joblib]
-	G --> J[Model Evaluation]
-	I --> J
-	J --> K[Metrics JSON]
-	J --> L[MLflow Tracking Server<br/>params + metrics + model]
-	I --> M[Flask Inference App]
-	N[User Input Form] --> M
-	M --> O[Predicted Wine Quality]
-```
+## MLOps Design
 
-## Pipeline Flow (Stage-to-Stage)
+This project follows practical MLOps patterns for maintainability and reproducibility:
 
-```mermaid
-sequenceDiagram
-	participant Main as main.py
-	participant S1 as Stage 1 Ingestion
-	participant S2 as Stage 2 Validation
-	participant S3 as Stage 3 Transformation
-	participant S4 as Stage 4 Trainer
-	participant S5 as Stage 5 Evaluation
-	participant ML as MLflow
+- **Config-driven pipeline** — data paths, hyperparameters, and schema are never hardcoded.
+- **Stage isolation** — each stage has dedicated pipeline and component modules with clear boundaries.
+- **Artifact lineage** — every stage writes outputs to `artifacts/` for traceability and reproducibility.
+- **Observability** — runtime logs are written under `logs/`.
+- **Experiment tracking** — MLflow captures parameters, metrics, and model versions across runs.
 
-	Main->>S1: download + extract dataset
-	S1-->>Main: raw CSV artifact
-	Main->>S2: validate columns and dtypes
-	S2-->>Main: status.txt = True/False
-	Main->>S3: split train/test if valid
-	S3-->>Main: train.csv, test.csv
-	Main->>S4: train ElasticNet
-	S4-->>Main: model.joblib
-	Main->>S5: evaluate model
-	S5->>ML: log params, metrics, model
-	S5-->>Main: metrics.json
-```
-
-## Portfolio Highlights
-
-- Production-style, multi-stage ML pipeline with clear stage boundaries.
-- Traceable artifact lineage from raw data to registered experiment outputs.
-- Reproducible training through YAML-driven config and parameter management.
-- Integrated model serving path from trained artifact to live Flask prediction UI.
-
-## MLOps Design in This Project
-
-This repository follows practical MLOps patterns:
-
-- **Config-driven pipeline:** data paths, parameters, and schema are not hardcoded.
-- **Stage isolation:** each stage has dedicated pipeline and component modules.
-- **Artifact lineage:** every stage writes outputs to `artifacts/` for traceability.
-- **Observability:** runtime logs are written under `logs/`.
-- **Experiment tracking:** MLflow captures params, metrics, and model versions.
+---
 
 ## MLflow Setup
 
-Before running model evaluation (stage 5), set these environment variables:
+Before running the model evaluation stage (stage 5), set the following environment variables:
 
-- `MLFLOW_TRACKING_URI`
-- `MLFLOW_TRACKING_USERNAME`
-- `MLFLOW_TRACKING_PASSWORD`
+| Variable | Description |
+|---|---|
+| `MLFLOW_TRACKING_URI` | URL of your MLflow tracking server |
+| `MLFLOW_TRACKING_USERNAME` | Your MLflow username |
+| `MLFLOW_TRACKING_PASSWORD` | Your MLflow password or token |
 
-> Note: This code validates all three variables before evaluation. Even if you use a local MLflow server, you must set all three variables.
+> **Note:** All three variables are validated before evaluation begins. They must be set even when using a local MLflow server.
 
-### Example (PowerShell)
+### Remote Server (PowerShell)
 
 ```powershell
 $env:MLFLOW_TRACKING_URI="https://your-mlflow-server"
@@ -162,18 +121,23 @@ $env:MLFLOW_TRACKING_USERNAME="your-username"
 $env:MLFLOW_TRACKING_PASSWORD="your-password-or-token"
 ```
 
-### Local MLflow Option
+### Local MLflow Server
 
-If you want local tracking:
+Run the MLflow UI in one terminal:
 
 ```powershell
 mlflow ui --host 127.0.0.1 --port 5000
+```
+
+Then set the environment variables in a second terminal before running the pipeline:
+
+```powershell
 $env:MLFLOW_TRACKING_URI="http://127.0.0.1:5000"
 $env:MLFLOW_TRACKING_USERNAME="local"
 $env:MLFLOW_TRACKING_PASSWORD="local"
 ```
 
-Then run the pipeline in another terminal.
+---
 
 ## Project Setup
 
@@ -184,20 +148,18 @@ git clone https://github.com/khalidi-siam/End-to-End-ML-Project-with-MLflow.git
 cd End-to-End-ML-Project-with-MLflow
 ```
 
-### 2. Create and activate virtual environment
+### 2. Create and activate a virtual environment
 
 ```bash
 python -m venv .venv
 ```
 
-Windows PowerShell:
-
+**Windows (PowerShell):**
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-Linux/macOS:
-
+**Linux / macOS:**
 ```bash
 source .venv/bin/activate
 ```
@@ -212,68 +174,109 @@ pip install -e .
 
 ### 4. Configure MLflow environment variables
 
-Set the three variables described above in your current shell before running model evaluation.
+Set the three variables described in the [MLflow Setup](#mlflow-setup) section before running the pipeline.
+
+---
 
 ## How to Run
 
-### Run complete training pipeline
+### Run the full training pipeline
 
 ```bash
 python main.py
 ```
 
-### Run Flask prediction app
+### Launch the Flask prediction app
 
 ```bash
 python app.py
 ```
 
-Open in browser:
+Open in browser: `http://127.0.0.1:8000`
 
-`http://127.0.0.1:8000`
+---
+
+## Docker
+
+The repository includes a `Dockerfile` that packages and serves the Flask application.
+
+### Build the image
+
+```bash
+docker build -t wine-quality-mlflow .
+```
+
+### Run the container
+
+```bash
+docker run --rm -p 8000:8000 wine-quality-mlflow
+```
+
+Open in browser: `http://127.0.0.1:8000`
+
+### Optional: Pass MLflow environment variables to the container
+
+If you run evaluation code in containerized workflows, provide MLflow credentials at runtime:
+
+```bash
+docker run --rm -p 8000:8000 \
+  -e MLFLOW_TRACKING_URI="http://host.docker.internal:5000" \
+  -e MLFLOW_TRACKING_USERNAME="local" \
+  -e MLFLOW_TRACKING_PASSWORD="local" \
+  wine-quality-mlflow
+```
+
+---
 
 ## Expected Outputs
 
-After a successful pipeline run, you should see:
+After a successful pipeline run, the following artifacts are generated:
 
-- downloaded and extracted dataset under `artifacts/data_ingestion/`
-- validation report at `artifacts/data_validation/status.txt`
-- train/test CSV at `artifacts/data_transformation/`
-- trained model at `artifacts/model_trainer/model.joblib`
-- metrics at `artifacts/model_evaluation/metrics.json`
-- runtime logs under `logs/`
-- experiment runs visible in your MLflow tracking server
+| Path | Contents |
+|---|---|
+| `artifacts/data_ingestion/` | Downloaded and extracted dataset |
+| `artifacts/data_validation/status.txt` | Schema validation report |
+| `artifacts/data_transformation/` | Train and test CSV files |
+| `artifacts/model_trainer/model.joblib` | Serialized trained model |
+| `artifacts/model_evaluation/metrics.json` | RMSE, MAE, and R² scores |
+| `logs/` | Runtime logs for all pipeline stages |
+| MLflow UI | Experiment runs with params, metrics, and model artifacts |
 
-## Repository Structure (High Level)
+---
+
+## Repository Structure
 
 ```text
 .
-|-- app.py                     # Flask inference app
-|-- main.py                    # Orchestrates all training stages
-|-- config/config.yaml         # Pipeline stage paths and sources
-|-- params.yaml                # Model hyperparameters
-|-- schema.yaml                # Expected dataset schema
-|-- src/mlProject/
-|   |-- components/            # Stage implementation logic
-|   |-- config/                # Configuration manager
-|   |-- entity/                # Dataclass config contracts
-|   |-- pipeline/              # Stage entrypoints + prediction pipeline
-|   |-- utils/                 # Common helpers + env validators
-|   |-- logger.py              # Logging setup
-|   \-- exception.py           # Custom exception wrapper
-|-- templates/                 # HTML pages for Flask app
-|-- research/                  # Jupyter notebooks for experimentation
-|-- artifacts/                 # Generated outputs from pipeline stages
-\-- logs/                      # Runtime logs
+├── app.py                     # Flask inference application
+├── main.py                    # Pipeline orchestrator (runs all stages)
+├── config/
+│   └── config.yaml            # Pipeline stage paths and data sources
+├── params.yaml                # Model hyperparameters
+├── schema.yaml                # Expected dataset schema and dtypes
+├── src/mlProject/
+│   ├── components/            # Stage implementation logic
+│   ├── config/                # Configuration manager
+│   ├── entity/                # Dataclass config contracts
+│   ├── pipeline/              # Stage entrypoints and prediction pipeline
+│   ├── utils/                 # Common helpers and environment validators
+│   ├── logger.py              # Logging setup
+│   └── exception.py           # Custom exception wrapper
+├── templates/                 # HTML templates for Flask app
+├── research/                  # Jupyter notebooks for experimentation
+├── artifacts/                 # Generated pipeline outputs (gitignored)
+└── logs/                      # Runtime logs (gitignored)
 ```
+
+---
 
 ## Notes
 
-- Do not commit real credentials or access tokens.
-- Keep a local `.env` only for development, and load values into your shell before running stage 5.
-- `Dockerfile` is currently empty and can be completed later for containerized deployment.
+- Do not commit credentials or access tokens. Use a local `.env` file during development and load values into your shell before running stage 5.
+- The Docker image entrypoint runs `python app.py` and serves on port `8000`.
+
+---
 
 ## Author
 
-Khalidi Siam
-
+**Khalidi Siam**
