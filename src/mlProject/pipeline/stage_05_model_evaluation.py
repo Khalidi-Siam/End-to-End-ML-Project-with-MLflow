@@ -10,7 +10,7 @@ class ModelEvaluationTrainingPipeline:
 
     def main(self):
         try:
-            validate_mlflow_env()
+            # validate_mlflow_env()
             config = ConfigurationManager()
             model_evaluation_config = config.get_model_evaluation_config()
             model_evaluation_config = ModelEvaluation(config=model_evaluation_config)
