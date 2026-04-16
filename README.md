@@ -1,10 +1,9 @@
 # End-to-End ML Project with MLflow
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Render-46E3B7?logo=render&logoColor=white)](https://end-to-end-ml-project-with-mlflow-1w4o.onrender.com)
 [![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![scikit-learn](https://img.shields.io/badge/scikit--learn-ML-F7931E?logo=scikitlearn&logoColor=white)](https://scikit-learn.org/stable/)
 [![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?logo=mlflow&logoColor=white)](https://mlflow.org/)
 [![Flask](https://img.shields.io/badge/Flask-Web%20App-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![Status](https://img.shields.io/badge/Project-End--to--End%20ML-success)](#project-pipeline)
 
 A production-style machine learning workflow for **Red Wine Quality** prediction, featuring:
 
@@ -193,6 +192,12 @@ python app.py
 ```
 
 Open in browser: `http://127.0.0.1:8000`
+
+---
+
+## Live Demo
+
+Project live link: https://end-to-end-ml-project-with-mlflow-1w4o.onrender.com
 
 ---
 
