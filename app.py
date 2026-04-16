@@ -1,7 +1,5 @@
 from flask import Flask, render_template, request
-import os
 import numpy as np
-import pandas as pd
 from mlProject.pipeline.prediction import PredictionPipeline
 from mlProject.exception import CustomException
 import sys
@@ -44,5 +42,5 @@ def predict():
     
 
 if __name__ == '__main__':
-    # app.run(host="0.0.0.0", port = 8000, debug=True)
-    app.run(host="0.0.0.0", port = 8000)
+    # app.run(host="0.0.0.0", port = 8000, debug=True) # for local development
+    app.run(host="0.0.0.0", port = 8000) # for local development

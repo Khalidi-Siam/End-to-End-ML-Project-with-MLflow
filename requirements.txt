@@ -1,12 +1,9 @@
 pandas
-mlflow
-notebook
 numpy
 scikit-learn
-matplotlib
 pyYAML
-tqdm
 joblib
 types-PyYAML
 Flask
 Flask-Cors
+gunicorn
